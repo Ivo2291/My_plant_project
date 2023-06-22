@@ -1,20 +1,21 @@
 from django.urls import path, include
 
-from My_plant_project.my_plant_app.views import index
-
-'''•	http://localhost:8000/ - home page
-•	http://localhost:8000/profile/create/ - profile create page
-•	http://localhost:8000/catalogue/ - catalogue
-•	http://localhost:8000/create/ - plant create page
-•	http://localhost:8000/details/<plant_id>/ - plant details page
-•	http://localhost:8000/edit/<plant_id>/ - plant edit page
-•	http://localhost:8000/delete/<plant_id>/ - plant delete page
-•	http://localhost:8000/profile/details/ - profile details page
-•	http://localhost:8000/profile/edit/ - profile edit page
-•	http://localhost:8000/profile/delete/ - profile delete page
-'''
+from My_plant_project.my_plant_app.views import index, catalogue_page, profile_create_page, profile_details_page, \
+    profile_edit_page, profile_delete_page, plant_create_page, plant_details_page, plant_edit_page, plant_delete_page
 
 
 urlpatterns = (
     path('', index, name='index'),
+    path('catalogue/', catalogue_page, name='catalogue'),
+    path('profile/', include([
+        path('create/', profile_create_page, name='profile create'),
+        path('details/', profile_details_page, name='profile details'),
+        path('edit/', profile_edit_page, name="profile edit"),
+        path('delete/', profile_delete_page, name="profile delete"),
+    ])),
+
+    path('create/', plant_create_page, name='plant create'),
+    path('details/<int:pk>/', plant_details_page, name='plant details'),
+    path('edit/<int:pk>/', plant_edit_page, name="plant edit"),
+    path('delete/<int:pk>/', plant_delete_page, name="plant delete"),
 )

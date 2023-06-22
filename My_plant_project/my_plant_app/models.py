@@ -4,7 +4,7 @@ from django.db import models
 
 
 def validate_string_starts_with_capital_letter(value):
-    first_char = value[:1]
+    first_char = value[0]
 
     if not first_char.isupper():
         raise ValidationError('Your name must start with a capital letter!')
@@ -24,13 +24,14 @@ class Profile(models.Model):
     username = models.CharField(
         max_length=MAX_USERNAME_LENGTH,
         validators=[
-            validators.MinValueValidator(MIN_USERNAME_LENGTH),
+            validators.MinLengthValidator(MIN_USERNAME_LENGTH),
         ],
         null=False,
         blank=False,
     )
 
     first_name = models.CharField(
+        verbose_name='First Name',
         max_length=MAX_FIRST_NAME_LENGTH,
         validators=[
             validate_string_starts_with_capital_letter,
@@ -40,6 +41,7 @@ class Profile(models.Model):
     )
 
     last_name = models.CharField(
+        verbose_name='Last Name',
         max_length=MAX_LAST_NAME_LENGTH,
         validators=[
             validate_string_starts_with_capital_letter,
@@ -67,7 +69,7 @@ class Plant(models.Model):
         (INDOOR, INDOOR),
     )
 
-    plant_type = models.CharField(
+    type = models.CharField(
         max_length=MAX_TYPE_LENGTH,
         choices=TYPES,
         null=False,
@@ -77,7 +79,7 @@ class Plant(models.Model):
     name = models.CharField(
         max_length=MAX_NAME_LENGTH,
         validators=[
-            validators.MinValueValidator(MIN_NAME_LENGTH),
+            validators.MinLengthValidator(MIN_NAME_LENGTH),
             validate_string_contains_only_letters,
         ],
         null=False,
