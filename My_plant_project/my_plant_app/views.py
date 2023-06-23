@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 
-from My_plant_project.my_plant_app.forms import ProfileCreateForm, PlantCreateForm
+from My_plant_project.my_plant_app.forms import ProfileCreateForm, PlantCreateForm, PlantEditForm, PlantDeleteForm
 from My_plant_project.my_plant_app.models import Profile, Plant
 
 
@@ -86,8 +86,38 @@ def plant_create_page(request):
 
 
 def plant_edit_page(request, pk):
-    return render(request, 'edit-plant.html')
+    plant = Plant.objects.filter(pk=pk).get()
+
+    if request.method == 'POST':
+        form = PlantEditForm(request.POST, instance=plant)
+        if form.is_valid():
+            form.save()
+            return redirect('catalogue')
+
+    form = PlantEditForm(instance=plant)
+
+    context = {
+        'form': form,
+        'plant': plant,
+    }
+
+    return render(request, 'edit-plant.html', context)
 
 
 def plant_delete_page(request, pk):
-    return render(request, 'delete-plant.html')
+    plant = Plant.objects.filter(pk=pk).get()
+
+    if request.method == 'POST':
+        form = PlantDeleteForm(request.POST, instance=plant)
+        if form.is_valid():
+            form.save()
+            return redirect('catalogue')
+
+    form = PlantDeleteForm(instance=plant)
+
+    context = {
+        'form': form,
+        'plant': plant,
+    }
+
+    return render(request, 'delete-plant.html', context)
