@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 
-from My_plant_project.my_plant_app.forms import ProfileCreateForm, PlantCreateForm, PlantEditForm, PlantDeleteForm
+from My_plant_project.my_plant_app.forms import ProfileCreateForm, PlantCreateForm, PlantEditForm, PlantDeleteForm, \
+    ProfileEditForm
 from My_plant_project.my_plant_app.models import Profile, Plant
 
 
@@ -23,13 +24,10 @@ def index(request):
 
 
 def profile_create_page(request):
-    if request.method == 'POST':
-        form = ProfileCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('catalogue')
-
-    form = ProfileCreateForm()
+    form = ProfileCreateForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('catalogue')
 
     context = {
         'form': form,
@@ -39,22 +37,53 @@ def profile_create_page(request):
 
 
 def profile_details_page(request):
-    return render(request, 'profile-details.html')
+    profile = get_profile()
+    plants_count = Plant.objects.all().count()
+
+    context = {
+        'profile': profile,
+        'plants_count': plants_count,
+    }
+
+    return render(request, 'profile-details.html', context)
 
 
 def profile_edit_page(request):
-    return render(request, 'edit-profile.html')
+    profile = get_profile()
+
+    form = ProfileEditForm(request.POST or None, instance=profile)
+    if form.is_valid():
+        form.save()
+        return redirect('profile details')
+
+    context = {
+        'profile': profile,
+        'form': form,
+    }
+
+    return render(request, 'edit-profile.html', context)
 
 
 def profile_delete_page(request):
-    return render(request, 'delete-profile.html')
+    profile = get_profile()
+    plants = Plant.objects.all()
+
+    if request.method == 'POST':
+        profile.delete()
+        plants.delete()
+
+        return redirect('index')
+
+    return render(request, 'delete-profile.html', {'profile': profile,})
 
 
 def catalogue_page(request):
     plants = Plant.objects.all()
+    profile = get_profile()
 
     context = {
         'plants': plants,
+        'profile': profile,
     }
 
     return render(request, 'catalogue.html', context)
@@ -70,16 +99,15 @@ def plant_details_page(request, pk):
 
 
 def plant_create_page(request):
-    if request.method == 'POST':
-        form = PlantCreateForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('catalogue')
-
-    form = PlantCreateForm()
+    profile = get_profile()
+    form = PlantCreateForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('catalogue')
 
     context = {
         'form': form,
+        'profile': profile,
     }
 
     return render(request, 'create-plant.html', context)
@@ -88,13 +116,10 @@ def plant_create_page(request):
 def plant_edit_page(request, pk):
     plant = Plant.objects.filter(pk=pk).get()
 
-    if request.method == 'POST':
-        form = PlantEditForm(request.POST, instance=plant)
-        if form.is_valid():
-            form.save()
-            return redirect('catalogue')
-
-    form = PlantEditForm(instance=plant)
+    form = PlantEditForm(request.POST or None, instance=plant)
+    if form.is_valid():
+        form.save()
+        return redirect('catalogue')
 
     context = {
         'form': form,

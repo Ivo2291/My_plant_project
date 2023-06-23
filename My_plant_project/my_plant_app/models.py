@@ -7,12 +7,13 @@ def validate_string_starts_with_capital_letter(value):
     first_char = value[0]
 
     if not first_char.isupper():
-        raise ValidationError('Your name must start with a capital letter!')
+        raise ValidationError("Your name must start with a capital letter!")
 
 
 def validate_string_contains_only_letters(value):
-    if not value.isalpha():
-        raise ValidationError('Plant name should contain only letters!')
+    for char in value:
+        if not char.isalpha():
+            raise ValidationError("Plant name should contain only letters!")
 
 
 class Profile(models.Model):

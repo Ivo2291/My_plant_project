@@ -3,10 +3,20 @@ from django import forms
 from My_plant_project.my_plant_app.models import Profile, Plant
 
 
+class ProfileBaseForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+
 class ProfileCreateForm(forms.ModelForm):
     class Meta:
         model = Profile
         exclude = ['profile_picture']
+
+
+class ProfileEditForm(ProfileBaseForm):
+    pass
 
 
 class PlantBaseForm(forms.ModelForm):
